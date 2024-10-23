@@ -26,7 +26,7 @@ func main() {
 
 	// create router
 	router := mux.NewRouter()
-	router.HandleFunc("/api/go/helloWorld", helloWorld()).Methods("GET")
+	router.HandleFunc("/api/helloWorld", helloWorld()).Methods("GET")
 
 	// wrap the router with CORS and JSON content type middlewares
 	enhancedRouter := enableCORS(jsonContentTypeMiddleware(router))
@@ -60,11 +60,4 @@ func jsonContentTypeMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		next.ServeHTTP(w, r)
 	})
-}
-
-func helloWorld() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World!"))
-		w.WriteHeader(http.StatusOK)
-	}
 }
