@@ -80,138 +80,32 @@ import Link from "next/link";
 import { Slider } from "./ui/slider";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Card, CardContent } from "./ui/card";
+import { signOut, useSession } from "next-auth/react";
 // This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+const projects = [
+  {
+    name: "Playlist 1",
+    url: "#",
+    icon: Music,
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Playlist 1",
-      url: "#",
-      icon: Music,
-    },
-    {
-      name: "Playlist 2",
-      url: "#",
-      icon: Music,
-    },
-    {
-      name: "Playlist 3",
-      url: "#",
-      icon: Music,
-    },
-  ],
-};
+  {
+    name: "Playlist 2",
+    url: "#",
+    icon: Music,
+  },
+  {
+    name: "Playlist 3",
+    url: "#",
+    icon: Music,
+  },
+];
 
-export default function SpotifyWrapper() {
-  const [activeTeam, setActiveTeam] = React.useState(data.teams[0]);
+export default function SpotifyWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { data, status } = useSession();
   const { theme, setTheme } = useTheme();
 
   return (
@@ -249,7 +143,7 @@ export default function SpotifyWrapper() {
               <span className="ml-1">Your Library</span>
             </SidebarGroupLabel>
             <SidebarMenu>
-              {data.projects.map((item) => (
+              {projects.map((item) => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
@@ -295,91 +189,99 @@ export default function SpotifyWrapper() {
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={data.user.avatar}
-                        alt={data.user.name}
-                      />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
-                        {data.user.name}
-                      </span>
-                      <span className="truncate text-xs">
-                        {data.user.email}
-                      </span>
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                  side="bottom"
-                  align="end"
-                  sideOffset={4}
-                >
-                  <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+        <SidebarFooter className="pb-24 overflow-hidden">
+          {status === "authenticated" && (
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                      size="lg"
+                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    >
                       <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage
-                          src={data.user.avatar}
-                          alt={data.user.name}
-                        />
                         <AvatarFallback className="rounded-lg">
-                          CN
+                          {data?.user?.name?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
-                          {data.user.name}
+                          {data?.user?.name}
                         </span>
                         <span className="truncate text-xs">
-                          {data.user.email}
+                          {data?.user?.email}
                         </span>
                       </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <Sparkles />
-                      Upgrade to Pro
+                      <ChevronsUpDown className="ml-auto size-4" />
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                    side="bottom"
+                    align="end"
+                    sideOffset={4}
+                  >
+                    <DropdownMenuLabel className="p-0 font-normal">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarFallback className="rounded-lg">
+                            {data?.user?.name?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-semibold">
+                            {data?.user?.name}
+                          </span>
+                          <span className="truncate text-xs">
+                            {data?.user?.email}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Sparkles />
+                        Upgrade to Pro
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <BadgeCheck />
+                        Account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <CreditCard />
+                        Billing
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Bell />
+                        Notifications
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => signOut()}>
+                      <LogOut />
+                      Log out
                     </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                      <BadgeCheck />
-                      Account
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <CreditCard />
-                      Billing
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Bell />
-                      Notifications
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut />
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
+          {status === "unauthenticated" && (
+            <SidebarMenu>
+              <span className="font-bold tracking-tighter text-xl">
+                Have an account?
+              </span>
+              <SidebarMenuItem>
+                <Link href="/auth/login" className="text-[#1ed760]">
+                  Login
+                </Link>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
@@ -403,89 +305,11 @@ export default function SpotifyWrapper() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Good afternoon</h1>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <ScrollArea className="h-[calc(100vh-180px)]">
-            <div className="p-4 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-2.5 flex items-center space-x-4">
-                      <div className="size-16 bg-primary/10 rounded-md" />
-                      <div>Playlist {i + 1}</div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <h2 className="text-2xl font-semibold">Made for You</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-2.5">
-                      <div className="w-full aspect-square bg-primary/10 rounded-md mb-4" />
-                      <div className="font-semibold">Daily Mix {i + 1}</div>
-                      <div className="text-sm text-muted-foreground">
-                        Playlist
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+        <div className="flex flex-1 flex-col gap-4 p-0 m-0">
+          <ScrollArea className="h-[calc(100vh-9rem)] overflow-y-scroll">
+            <div className="p-4 space-y-4">{children}</div>
           </ScrollArea>
         </div>
-        <footer className="h-20 bg-card text-card-foreground border-t">
-          <div className="h-full px-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 bg-primary/10 rounded-md hidden sm:block" />
-              <div>
-                <div className="font-semibold">Song Title</div>
-                <div className="text-sm text-muted-foreground">Artist</div>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="flex items-center space-x-2 sm:space-x-4 mb-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hidden sm:flex"
-                >
-                  <Shuffle className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <SkipBack className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8">
-                  <Play className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <SkipForward className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hidden sm:flex"
-                >
-                  <Repeat className="h-4 w-4" />
-                </Button>
-              </div>
-              <Slider
-                defaultValue={[33]}
-                max={100}
-                step={1}
-                className="w-[200px] sm:w-[300px] md:w-[400px]"
-              />
-            </div>
-            <div className="items-center space-x-2 hidden md:flex">
-              <Volume2 className="h-4 w-4" />
-              <Slider
-                defaultValue={[66]}
-                max={100}
-                step={1}
-                className="w-[100px]"
-              />
-            </div>
-          </div>
-        </footer>
       </SidebarInset>
     </SidebarProvider>
   );

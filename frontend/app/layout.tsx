@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import Providers from "./providers";
+import { getSession } from "@/lib/auth/options";
+import Layout from "@/components/layout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,18 +22,22 @@ export const metadata: Metadata = {
   description: "Spotify clone",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <Providers session={session}>
+            <Layout>{children}</Layout>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

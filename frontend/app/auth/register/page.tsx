@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { LoginForm } from "@/components/forms/login-form";
+import { RegisterForm } from "@/components/forms/register-form";
 import Link from "next/link";
 
 export default function Login() {
@@ -28,20 +28,15 @@ export default function Login() {
             <path d="M9 12a3 3 0 0 1 6 0" />
             <path d="M10 12a2 2 0 0 1 4 0" />
           </svg>
-          <h1 className="text-3xl font-bold">Log in to Spotify</h1>
+          <h1 className="text-3xl font-bold">Register for Spotify</h1>
         </div>
         <div className="space-y-4">
-          <LoginForm callbackUrl={callbackUrl} />
-          <div className="text-center">
-            <a href="#" className="text-[#1DB954] hover:underline">
-              Forgot your password?
-            </a>
-          </div>
+          <RegisterForm callbackUrl={callbackUrl} />
         </div>
         <div className="mt-8 text-center">
-          <p className="text-gray-400">Don&apos;t have an account?</p>
-          <Link href="/auth/register" className="hover:underline">
-            Register for Spotify
+          <p className="text-gray-400">Already have an account?</p>
+          <Link href="/auth/login" className="text-white hover:underline">
+            Login to Spotify
           </Link>
         </div>
       </div>

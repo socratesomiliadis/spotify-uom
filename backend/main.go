@@ -1,63 +1,138 @@
 package main
 
 import (
-	"database/sql"
-	"log"
+	"api/auth"
+	"api/db"
+	"api/models/dtos"
+	"api/services"
+	"encoding/json"
 	"net/http"
-	"os"
-	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/spf13/viper"
 )
 
-// main function
 func main() {
-	//connect to database
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	viper.SetConfigFile(".env")
+	viper.ReadInConfig()
 
-	// create table if not exists
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS test_table (id SERIAL PRIMARY KEY, test TEXT)")
-	if err != nil {
-		log.Fatal(err)
-	}
+	db.ConnectDB()
+	db.GetInstance().Migration()
 
-	// create router
-	router := mux.NewRouter()
-	router.HandleFunc("/api/helloWorld", helloWorld()).Methods("GET")
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("welcome"))
+	})
 
-	// wrap the router with CORS and JSON content type middlewares
-	enhancedRouter := enableCORS(jsonContentTypeMiddleware(router))
-
-	// start server
-	log.Fatal(http.ListenAndServe(":8000", enhancedRouter))
-}
-
-func enableCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set CORS headers
-		w.Header().Set("Access-Control-Allow-Origin", "*") // Allow any origin
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		// Check if the request is for CORS preflight
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
+	router.Post("/signup/credential", func(w http.ResponseWriter, r *http.Request) {
+		var signupData dtos.CredentialSignupDto
+		parsingErr := json.NewDecoder(r.Body).Decode(&signupData)
+		if parsingErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: parsingErr.Error()})
 			return
 		}
 
-		// Pass down the request to the next middleware (or final handler)
-		next.ServeHTTP(w, r)
+		result, err := services.CredentialSignup(&signupData)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(result)
 	})
 
-}
+	// router.Post("/signup/oauth", func(w http.ResponseWriter, r *http.Request) {
+	// 	var signupData dtos.OAuthDto
+	// 	parsingErr := json.NewDecoder(r.Body).Decode(&signupData)
+	// 	if parsingErr != nil {
+	// 		w.WriteHeader(http.StatusBadRequest)
+	// 		json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: parsingErr.Error()})
+	// 		return
+	// 	}
 
-func jsonContentTypeMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set JSON Content-Type
-		w.Header().Set("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
+	// 	result, err := services.OAuthSignup(&signupData)
+	// 	if err != nil {
+	// 		w.WriteHeader(http.StatusBadRequest)
+	// 		json.NewEncoder(w).Encode(err)
+	// 		return
+	// 	}
+	// 	w.WriteHeader(http.StatusOK)
+	// 	json.NewEncoder(w).Encode(result)
+	// })
+
+	router.Post("/login/credential", func(w http.ResponseWriter, r *http.Request) {
+		var signinData dtos.CredentialSigninDto
+		parsingErr := json.NewDecoder(r.Body).Decode(&signinData)
+		if parsingErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: parsingErr.Error()})
+			return
+		}
+
+		token, err := services.UserCredentialLogin(&signinData)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(token)
 	})
+
+	// router.Post("/login/oauth", func(w http.ResponseWriter, r *http.Request) {
+	// 	var signinData dtos.OAuthDto
+	// 	parsingErr := json.NewDecoder(r.Body).Decode(&signinData)
+	// 	if parsingErr != nil {
+	// 		w.WriteHeader(http.StatusBadRequest)
+	// 		json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: parsingErr.Error()})
+	// 		return
+	// 	}
+
+	// 	token, err := services.UserOAuthLogin(&signinData)
+	// 	if err != nil {
+	// 		w.WriteHeader(http.StatusBadRequest)
+	// 		json.NewEncoder(w).Encode(err)
+	// 		return
+	// 	}
+	// 	w.WriteHeader(http.StatusOK)
+	// 	json.NewEncoder(w).Encode(token)
+	// })
+
+	router.With(auth.Authenticate).Get("/profile", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		profile, errDto := services.GetUserByID(currentUser.ID)
+		if errDto != nil {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(profile)
+	})
+
+	router.Post("/email-verify", func(w http.ResponseWriter, r *http.Request) {
+		var verificationData dtos.EmailVerifyDto
+		parsingErr := json.NewDecoder(r.Body).Decode(&verificationData)
+		if parsingErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: parsingErr.Error()})
+			return
+		}
+
+		user, err := services.VerifyUserEmail(&verificationData)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(user)
+	})
+
+	http.ListenAndServe(":8000", router)
+
 }
