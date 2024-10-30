@@ -8,7 +8,7 @@ export default function Login() {
   const callbackUrl = useSearchParams().get("callbackUrl") || "/";
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-black dark:text-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen text-white p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <svg

@@ -53,7 +53,7 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
             {...register("name", {
               required: "Name is required",
             })}
-            className="bg-[#121212] border-gray-700 text-white placeholder-gray-400"
+            className="bg-[#121212] border-gray-700 rounded-full text-white placeholder-gray-400"
           />
           {errors.name && (
             <p className="text-red-500 text-sm">
@@ -75,7 +75,7 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
               },
               required: "Email is required",
             })}
-            className="bg-[#121212] border-gray-700 text-white placeholder-gray-400"
+            className="bg-[#121212] border-gray-700 rounded-full text-white placeholder-gray-400"
           />
           {errors.email && (
             <p className="text-red-500 text-sm">
@@ -93,7 +93,7 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
           type="password"
           placeholder="Password"
           {...register("password", { required: "Password is required" })}
-          className="bg-[#121212] border-gray-700 text-white placeholder-gray-400"
+          className="bg-[#121212] rounded-full border-gray-700 text-white placeholder-gray-400"
         />
         {errors.password && (
           <p className="text-red-500 text-sm">
@@ -105,7 +105,7 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
         <Checkbox
           id="isArtist"
           {...register("isArtist")}
-          className="border-gray-500"
+          className="border-gray-500 rounded-full"
         />
         <Label htmlFor="isArtist" className="text-sm font-medium text-gray-200">
           Are you an artist?
@@ -113,7 +113,7 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
       </div>
       <Button
         type="submit"
-        className="w-full mt-2 bg-[#1DB954] text-black hover:bg-[#1ed760]"
+        className="w-full mt-2 rounded-full bg-[#1DB954] text-black hover:bg-[#1ed760]"
       >
         Register
       </Button>

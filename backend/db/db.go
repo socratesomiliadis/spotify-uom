@@ -35,8 +35,8 @@ func ConnectDB() error {
 	}
 
 	// Use PostgreSQL connection instead of SQLite
-	// dsn := "host=host.docker.internal user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Europe/Athens"
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Europe/Athens"
+	dsn := "host=host.docker.internal user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Europe/Athens"
+	// dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Europe/Athens"
 	conn, err := gorm.Open(postgres.Open(dsn), gormCfg)
 	if err != nil {
 		return fmt.Errorf("failed to connect to PostgreSQL: %w", err)

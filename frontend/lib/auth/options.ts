@@ -53,6 +53,7 @@ export const authOptions: AuthOptions = {
 
     async session(ctx: any) {
       const { session, token } = ctx;
+      session.user.accessToken = token.accessToken;
       session.user.id = token.id;
       session.user.name = token.name;
       session.user.email = token.email;

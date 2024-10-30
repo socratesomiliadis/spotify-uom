@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/spf13/viper"
 )
 
@@ -23,6 +24,16 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
 	})
@@ -137,7 +148,8 @@ func main() {
 	// Add these routes inside the main function after the existing routes
 
 	// Get all published songs
-	router.Get("/songs", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/songs/all", func(w http.ResponseWriter, r *http.Request) {
+
 		songs, err := services.GetAllSongs()
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -149,7 +161,9 @@ func main() {
 	})
 
 	// Get song by ID
-	router.Get("/songs/{id}", func(w http.ResponseWriter, r *http.Request) {
+
+	router.Get("/songs/get/{id}", func(w http.ResponseWriter, r *http.Request) {
+
 		songId, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
