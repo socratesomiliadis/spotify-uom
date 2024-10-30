@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
   devIndicators: {
     buildActivityPosition: "bottom-right",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

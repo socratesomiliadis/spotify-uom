@@ -50,7 +50,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
           placeholder="Email address"
           required
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-[#121212] border-gray-700 text-white placeholder-gray-400"
+          className="bg-[#121212] border-gray-700 rounded-full text-white placeholder-gray-400"
         />
       </div>
       <div className="space-y-2">
@@ -63,7 +63,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
           placeholder="Password"
           required
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-[#121212] border-gray-700 text-white placeholder-gray-400"
+          className="bg-[#121212] rounded-full border-gray-700 text-white placeholder-gray-400"
         />
       </div>
       {/* <div className="flex items-center space-x-2">
@@ -74,7 +74,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
       </div> */}
       <Button
         type="submit"
-        className="w-full mt-2 bg-[#1DB954] text-black hover:bg-[#1ed760]"
+        className="w-full mt-2 rounded-full bg-[#1DB954] text-black hover:bg-[#1ed760]"
       >
         Log In
       </Button>

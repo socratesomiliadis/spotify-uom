@@ -25,14 +25,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const songs = await getAllSongs();
-  const session = getSession();
+  const session = await getSession();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
         <ToasterProvider />
 
-        {/*@ts-expect-error idk*/}
         <Providers session={session}>
           <Sidebar songs={songs}>{children}</Sidebar>
           <Player />

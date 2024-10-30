@@ -12,7 +12,7 @@ interface SearchProps {
 
 const Search = async ({ searchParams }: SearchProps) => {
   const { title } = await searchParams;
-  const songs = await getSongsByTitle(title);
+  const songs = title?.length > 0 ? await getSongsByTitle(title) : [];
 
   return (
     <div

@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import useLoadImage from '@/hooks/useLoadImage';
-import { Song } from '@/types';
+import useLoadImage from "@/hooks/useLoadImage";
 
-import PlayButton from './PlayButton';
+import PlayButton from "./PlayButton";
+import { SongDto } from "@/lib/dtos/song";
 
 interface SongItemProps {
-  data: Song;
-  onClick: (id: string) => void;
+  data: SongDto;
+  onClick: (id: number) => void;
 }
 
 const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
-  const imagePath = useLoadImage(data);
+  const imagePath = data.thumbnailURL;
 
   return (
     <div
       onClick={() => onClick(data.id)}
-      className='
+      className="
         relative 
         group 
         flex 
@@ -33,45 +33,45 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
         hover:bg-neutral-400/10 
         transition 
         p-3
-      '
+      "
     >
       <div
-        className='
+        className="
           relative 
           aspect-square 
           w-full
           h-full 
           rounded-md 
           overflow-hidden
-        '
+        "
       >
         <Image
-          className='object-cover'
-          src={imagePath || '/images/music-placeholder.png'}
+          className="object-cover"
+          src={imagePath || "/images/music-placeholder.png"}
           fill
-          alt='Image'
+          alt="Image"
         />
       </div>
-      <div className='flex flex-col items-start w-full pt-4 gap-y-1'>
-        <p className='font-semibold truncate w-full'>{data.title}</p>
+      <div className="flex flex-col items-start w-full pt-4 gap-y-1">
+        <p className="font-semibold truncate w-full">{data.title}</p>
         <p
-          className='
+          className="
             text-neutral-400 
             text-sm 
             pb-4 
             w-full 
             truncate
-          '
+          "
         >
-          By {data.author}
+          By {data.artistName}
         </p>
       </div>
       <div
-        className='
+        className="
           absolute 
           bottom-24 
           right-5
-        '
+        "
       >
         <PlayButton />
       </div>

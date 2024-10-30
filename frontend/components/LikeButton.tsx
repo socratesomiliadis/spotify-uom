@@ -22,15 +22,17 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!session?.user) {
+    if (!session?.user?.accessToken) {
       return;
     }
 
     const fetchData = async () => {
+      if (!session?.user?.accessToken) {
+        return;
+      }
+      
       try {
-        const likedSongs = await getFavorites(
-          session?.user?.accessToken as string
-        );
+        const likedSongs = await getFavorites(session.user.accessToken);
         setIsLiked(likedSongs.some((song) => song.id === songId));
       } catch (error) {
         toast.error("Failed to load liked status");
@@ -38,7 +40,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
     };
 
     fetchData();
-  }, [songId, session?.user?.id]);
+  }, [songId, session?.user?.accessToken]);
 
   const Icon = isLiked ? AiFillHeart : AiOutlineHeart;
 

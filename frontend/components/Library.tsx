@@ -24,10 +24,10 @@ const Library: React.FC<LibraryProps> = ({ songs }) => {
 
   const onClick = () => {
     if (!session?.user) {
-      return router.push("/auth/login");
+      router.push("/auth/login");
     }
 
-    return uploadModal.onOpen();
+    router.push("/upload");
   };
 
   return (

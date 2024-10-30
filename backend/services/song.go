@@ -35,7 +35,7 @@ func GetAllSongs() ([]*dtos.SongDto, *dtos.ErrorDto) {
 
 func GetSongByID(songId int) (*dtos.SongDto, *dtos.ErrorDto) {
 	song := &domains.Song{}
-	if err := db.GetInstance().First(song, songId).Error; err != nil {
+	if err := db.GetInstance().Preload("Artist").First(song, songId).Error; err != nil {
 		return nil, &dtos.ErrorDto{Message: err.Error()}
 	}
 

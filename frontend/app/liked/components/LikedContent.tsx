@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { Song } from "@/types";
+import { SongDto } from "@/lib/dtos/song";
 import MediaItem from "@/components/MediaItem";
 import LikeButton from "@/components/LikeButton";
 import useOnPlay from "@/hooks/useOnPlay";
 
 interface LikedContentProps {
-  songs: Song[];
+  songs: SongDto[];
 }
 
 const LikedContent: React.FC<LikedContentProps> = ({ songs }) => {
@@ -25,7 +25,7 @@ const LikedContent: React.FC<LikedContentProps> = ({ songs }) => {
     }
   }, [status, session, router]);
 
-  if (songs.length === 0) {
+  if (!songs || songs.length === 0) {
     return (
       <div
         className="
@@ -42,7 +42,7 @@ const LikedContent: React.FC<LikedContentProps> = ({ songs }) => {
   }
   return (
     <div className="flex flex-col gap-y-2 w-full p-6">
-      {songs.map((song: any) => (
+      {songs.map((song: SongDto) => (
         <div key={song.id} className="flex items-center gap-x-4 w-full">
           <div className="flex-1">
             <MediaItem onClick={(id) => onPlay(id)} data={song} />

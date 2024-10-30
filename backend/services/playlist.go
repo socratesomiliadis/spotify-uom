@@ -140,6 +140,10 @@ func GetUserFavorites(userId int) ([]*dtos.SongDto, *dtos.ErrorDto) {
 		return nil, &dtos.ErrorDto{Message: err.Error()}
 	}
 
+	if len(favorites) == 0 {
+		return []*dtos.SongDto{}, nil
+	}
+
 	var songDtos []*dtos.SongDto
 	for _, favorite := range favorites {
 		songDtos = append(songDtos, &dtos.SongDto{

@@ -1,10 +1,21 @@
 import { SongDto } from "@/lib/dtos/song";
 import { ErrorDto } from "@/lib/dtos/error";
+import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+const throwAxiosError = (err: any) => {
+  if (!!err.response) {
+    if (!!err.response.data && !!err.response.data["message"]) {
+      throw new Error(err.response.data["message"]);
+    }
+    throw new Error(err.message);
+  }
+  throw new Error("failed to perform request");
+};
+
 export async function getAllSongs(): Promise<SongDto[]> {
-  const response = await fetch(`${API_URL}/songs`, {
+  const response = await fetch(`${API_URL}/songs/all`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -20,7 +31,7 @@ export async function getAllSongs(): Promise<SongDto[]> {
 }
 
 export async function getSongById(id: number): Promise<SongDto> {
-  const response = await fetch(`${API_URL}/songs/${id}`, {
+  const response = await fetch(`${API_URL}/songs/get/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -77,18 +88,44 @@ export async function createSong(
     thumbnailURL: string;
   }
 ): Promise<void> {
-  const response = await fetch(`${API_URL}/songs/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+  try {
+    // const res = await axios.post(
+    //   `http://localhost:8000/songs/create`,
+    //   {
+    //     title: data.title,
+    //     isPublished: data.isPublished,
+    //     fileURL: data.fileURL,
+    //     thumbnailURL: data.thumbnailURL,
+    //   },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   }
+    // );
 
-  if (!response.ok) {
-    const error = (await response.json()) as ErrorDto;
-    throw new Error(error.message);
+    const res = await fetch(`${API_URL}/songs/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: data.title,
+        isPublished: data.isPublished,
+        fileURL: data.fileURL,
+        thumbnailURL: data.thumbnailURL,
+      }),
+    });
+
+    console.log(res);
+    console.log(token, data);
+
+    return res.json();
+  } catch (err: any) {
+    throwAxiosError(err);
   }
 }
 
@@ -147,7 +184,6 @@ export async function getFavorites(token: string): Promise<SongDto[]> {
   const response = await fetch(`${API_URL}/favorites`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });

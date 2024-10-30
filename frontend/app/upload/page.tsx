@@ -1,12 +1,8 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { LoginForm } from "@/components/forms/login-form";
-import Link from "next/link";
+import { UploadForm } from "@/components/forms/upload-form";
 
-export default function Login() {
-  const callbackUrl = useSearchParams().get("callbackUrl") || "/";
-
+export default function Upload() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-white p-4">
       <div className="w-full max-w-md">
@@ -28,21 +24,10 @@ export default function Login() {
             <path d="M9 12a3 3 0 0 1 6 0" />
             <path d="M10 12a2 2 0 0 1 4 0" />
           </svg>
-          <h1 className="text-3xl font-bold">Log in to Spotify</h1>
+          <h1 className="text-3xl font-bold">Upload to Spotify</h1>
         </div>
         <div className="space-y-4">
-          <LoginForm callbackUrl={callbackUrl} />
-          <div className="text-center">
-            <a href="#" className="text-[#1DB954] hover:underline">
-              Forgot your password?
-            </a>
-          </div>
-        </div>
-        <div className="mt-8 text-center">
-          <p className="text-gray-400">Don&apos;t have an account?</p>
-          <Link href="/auth/register" className="hover:underline">
-            Register for Spotify
-          </Link>
+          <UploadForm />
         </div>
       </div>
     </div>
