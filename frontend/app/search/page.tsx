@@ -6,11 +6,7 @@ import { getSongsByTitle } from "@/lib/services/song";
 
 export const revalidate = 0;
 
-interface SearchProps {
-  searchParams: { title: string };
-}
-
-const Search = async ({ searchParams }: SearchProps) => {
+const Search = async ({ searchParams }: any) => {
   const { title } = await searchParams;
   const songs = title?.length > 0 ? await getSongsByTitle(title) : [];
 

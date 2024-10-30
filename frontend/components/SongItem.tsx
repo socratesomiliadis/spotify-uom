@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 
-import useLoadImage from "@/hooks/useLoadImage";
-
 import PlayButton from "./PlayButton";
 import { SongDto } from "@/lib/dtos/song";
 

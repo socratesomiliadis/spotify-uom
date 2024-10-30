@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 
-import useLoadImage from "@/hooks/useLoadImage";
 import { SongDto } from "@/lib/dtos/song";
 import usePlayer from "@/hooks/usePlayer";
 
