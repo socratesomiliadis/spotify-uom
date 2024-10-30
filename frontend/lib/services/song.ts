@@ -181,6 +181,7 @@ export async function removeFromFavorites(
 }
 
 export async function getFavorites(token: string): Promise<SongDto[]> {
+  if (!token) return [];
   const response = await fetch(`${API_URL}/favorites`, {
     method: "GET",
     headers: {

@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { capitalize } from "@/lib/utils";
 
 export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
   const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
       if (res.ok) {
         router.push(res.url!);
       } else {
-        console.log(res.error);
+        toast.error(capitalize(res.error!)!);
       }
     }
   };
