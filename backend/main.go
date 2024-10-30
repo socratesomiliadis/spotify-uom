@@ -149,6 +149,7 @@ func main() {
 
 	// Get all published songs
 	router.Get("/songs/all", func(w http.ResponseWriter, r *http.Request) {
+
 		songs, err := services.GetAllSongs()
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -160,7 +161,9 @@ func main() {
 	})
 
 	// Get song by ID
+
 	router.Get("/songs/get/{id}", func(w http.ResponseWriter, r *http.Request) {
+
 		songId, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)

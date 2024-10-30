@@ -140,6 +140,7 @@ func GetUserFavorites(userId int) ([]*dtos.SongDto, *dtos.ErrorDto) {
 		return nil, &dtos.ErrorDto{Message: err.Error()}
 	}
 
+
 	if len(favorites) == 0 {
 		return []*dtos.SongDto{}, nil
 	}
