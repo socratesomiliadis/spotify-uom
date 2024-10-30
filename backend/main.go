@@ -7,6 +7,7 @@ import (
 	"api/services"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -131,6 +132,215 @@ func main() {
 		}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(user)
+	})
+
+	// Add these routes inside the main function after the existing routes
+
+	// Get all published songs
+	router.Get("/songs", func(w http.ResponseWriter, r *http.Request) {
+		songs, err := services.GetAllSongs()
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(songs)
+	})
+
+	// Get song by ID
+	router.Get("/songs/{id}", func(w http.ResponseWriter, r *http.Request) {
+		songId, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: "invalid song id"})
+			return
+		}
+
+		song, errDto := services.GetSongByID(songId)
+		if errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(song)
+	})
+
+	// Get songs by title
+	router.Get("/songs/title/{title}", func(w http.ResponseWriter, r *http.Request) {
+		title := chi.URLParam(r, "title")
+		songs, errDto := services.GetSongsByTitle(title)
+		if errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(songs)
+	})
+
+	// Get artist's songs (both published and unpublished)
+	router.With(auth.Authenticate).Get("/artist/songs", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		songs, err := services.GetArtistSongs(currentUser.ID)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(songs)
+	})
+
+	// Upload a new song (artist only)
+	router.With(auth.Authenticate).Post("/songs/create", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		var songData dtos.UploadSongDto
+		if err := json.NewDecoder(r.Body).Decode(&songData); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: err.Error()})
+			return
+		}
+
+		if err := services.CreateSong(currentUser.ID, &songData); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Delete a song (artist only)
+	router.With(auth.Authenticate).Delete("/songs/delete/{id}", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		songId := chi.URLParam(r, "id")
+
+		songIdInt, err := strconv.Atoi(songId)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: "invalid song id"})
+			return
+		}
+
+		if err := services.DeleteSong(currentUser.ID, songIdInt); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Playlist routes
+	router.With(auth.Authenticate).Post("/playlists/create", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		var playlistData dtos.CreatePlaylistDto
+		if err := json.NewDecoder(r.Body).Decode(&playlistData); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: err.Error()})
+			return
+		}
+
+		playlist, errDto := services.CreatePlaylist(currentUser.ID, &playlistData)
+		if errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(playlist)
+	})
+
+	router.With(auth.Authenticate).Get("/playlists", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		playlists, errDto := services.GetUserPlaylists(currentUser.ID)
+		if errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(playlists)
+	})
+
+	router.With(auth.Authenticate).Post("/playlists/{id}/songs", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		playlistId, _ := strconv.Atoi(chi.URLParam(r, "id"))
+
+		var songData dtos.AddSongToPlaylistDto
+		if err := json.NewDecoder(r.Body).Decode(&songData); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(&dtos.ErrorDto{Message: err.Error()})
+			return
+		}
+
+		if errDto := services.AddSongToPlaylist(currentUser.ID, playlistId, songData.SongID); errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	router.With(auth.Authenticate).Delete("/playlists/{playlistId}/songs/{songId}", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		playlistId, _ := strconv.Atoi(chi.URLParam(r, "playlistId"))
+		songId, _ := strconv.Atoi(chi.URLParam(r, "songId"))
+
+		if errDto := services.RemoveSongFromPlaylist(currentUser.ID, playlistId, songId); errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// Favorites routes
+	router.With(auth.Authenticate).Post("/favorites/add/{songId}", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		songId, _ := strconv.Atoi(chi.URLParam(r, "songId"))
+
+		if errDto := services.AddToFavorites(currentUser.ID, songId); errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	router.With(auth.Authenticate).Delete("/favorites/remove/{songId}", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		songId, _ := strconv.Atoi(chi.URLParam(r, "songId"))
+
+		if errDto := services.RemoveFromFavorites(currentUser.ID, songId); errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
+
+	router.With(auth.Authenticate).Get("/favorites", func(w http.ResponseWriter, r *http.Request) {
+		currentUser := auth.GetAuthUser(r)
+		favorites, errDto := services.GetUserFavorites(currentUser.ID)
+		if errDto != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errDto)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(favorites)
 	})
 
 	http.ListenAndServe(":8000", router)
