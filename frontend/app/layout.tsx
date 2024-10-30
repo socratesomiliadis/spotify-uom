@@ -1,44 +1,42 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Figtree } from "next/font/google";
+import Sidebar from "@/components/Sidebar";
+import ToasterProvider from "@/providers/ToasterProvider";
+
+import Player from "@/components/Player";
+
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { getAllSongs } from "@/lib/services/song";
 import Providers from "./providers";
 import { getSession } from "@/lib/auth/options";
-import Layout from "@/components/layout";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const font = Figtree({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Spotify UoM",
-  description: "Spotify clone",
+export const metadata = {
+  title: "Spotify Clone",
+  description:
+    "Spotify clone created using Next.js 13, Tailwind CSS and TypeScript.",
 };
+
+export const revalidate = 0;
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const session = await getSession();
+}) {
+  const songs = await getAllSongs();
+  const session = getSession();
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Providers session={session}>
-            <Layout>{children}</Layout>
-          </Providers>
-        </ThemeProvider>
+    <html lang="en">
+      <body className={font.className}>
+        <ToasterProvider />
+
+        {/*@ts-expect-error idk*/}
+        <Providers session={session}>
+          <Sidebar songs={songs}>{children}</Sidebar>
+          <Player />
+        </Providers>
       </body>
     </html>
   );

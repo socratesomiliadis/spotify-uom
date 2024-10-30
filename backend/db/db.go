@@ -49,6 +49,9 @@ func ConnectDB() error {
 func (db *DB) Migration() {
 	db.AutoMigrate(
 		&domains.User{},
+		&domains.Song{},
+		&domains.Playlist{},
+		&domains.Favorite{},
 	)
 }
 

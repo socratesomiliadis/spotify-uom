@@ -14,8 +14,9 @@ type CredentialSigninDto struct {
 
 type OAuthDto struct {
 	Provider    string `json:"provider"`
-	AccessToken string `json:"accessToken"`
+	AccessToken string `json:"accessToken"`	
 }
+
 
 type AccessDto struct {
 	Bearer string `json:"bearer"`
