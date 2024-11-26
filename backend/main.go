@@ -370,7 +370,7 @@ func main() {
 	// Default server config.
 	server := &http.Server{
 		Handler:   router,
-		Addr:      ":https",
+		Addr:      "0.0.0.0:8002",
 		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate}, // Default for prod.
 	}
 
