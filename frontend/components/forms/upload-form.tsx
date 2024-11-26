@@ -68,6 +68,9 @@ export function UploadForm() {
           onClientUploadComplete={(data) => {
             setImageURL(data[0].url);
           }}
+          onUploadError={(error: Error) => {
+            console.log(error);
+          }}
         />
       </div>
       <div className="space-y-2">
@@ -76,6 +79,9 @@ export function UploadForm() {
           endpoint="songUploader"
           onClientUploadComplete={(data) => {
             setFileURL(data[0].url);
+          }}
+          onUploadError={(error: Error) => {
+            console.log(error);
           }}
         />
       </div>
