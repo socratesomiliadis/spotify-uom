@@ -5,7 +5,7 @@ import axios from "axios";
 const API_URL =
   typeof window === "undefined"
     ? process.env.BACKEND_API_HOST
-    : "https://spotify-uom-api.sohub.digital";
+    : document.location.protocol + "://" + document.location.hostname + ":8002";
 
 const throwAxiosError = (err: any) => {
   if (!!err.response) {
