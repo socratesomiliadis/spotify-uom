@@ -5,6 +5,7 @@ import (
 	"api/db"
 	"api/models/dtos"
 	"api/services"
+	"crypto/tls"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -34,6 +36,7 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
 	})
@@ -357,6 +360,20 @@ func main() {
 		json.NewEncoder(w).Encode(favorites)
 	})
 
-	http.ListenAndServe("0.0.0.0:8002", router)
+	// Autocert.
+	m := &autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("localhost", "sohub.digital"), // Will change when I go to prod
+		Cache:      autocert.DirCache("."),                               // Where certs are stored
+	}
+
+	// Default server config.
+	server := &http.Server{
+		Handler:   router,
+		Addr:      ":https",
+		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate}, // Default for prod.
+	}
+
+	server.ListenAndServeTLS("", "")
 
 }
