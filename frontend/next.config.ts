@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  rewrites: async () => {
+    return [
+      {
+        source: "/spotify-api",
+        destination: "http://host.docker.internal:8002",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

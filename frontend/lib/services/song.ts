@@ -3,9 +3,7 @@ import { ErrorDto } from "@/lib/dtos/error";
 import axios from "axios";
 
 const API_URL =
-  typeof window === "undefined"
-    ? process.env.BACKEND_API_HOST
-    : "https://spotify-uom-api.sohub.digital";
+  typeof window === "undefined" ? process.env.BACKEND_API_HOST : "/spotify-api";
 
 const throwAxiosError = (err: any) => {
   if (!!err.response) {
