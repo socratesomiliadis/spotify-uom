@@ -94,22 +94,6 @@ export async function createSong(
   }
 ): Promise<void> {
   try {
-    // const res = await axios.post(
-    //   `http://localhost:8000/songs/create`,
-    //   {
-    //     title: data.title,
-    //     isPublished: data.isPublished,
-    //     fileURL: data.fileURL,
-    //     thumbnailURL: data.thumbnailURL,
-    //   },
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   }
-    // );
-
     const res = await fetch(`${API_URL}/songs/create`, {
       method: "POST",
       headers: {
