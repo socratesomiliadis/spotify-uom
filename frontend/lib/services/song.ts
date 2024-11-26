@@ -5,7 +5,7 @@ import axios from "axios";
 const API_URL =
   typeof window === "undefined"
     ? process.env.BACKEND_API_HOST
-    : process.env.NEXT_PUBLIC_API_URL;
+    : "http://pwgggogogsog4sww8c48wo48.167.235.203.74.sslip.io";
 
 const throwAxiosError = (err: any) => {
   if (!!err.response) {
