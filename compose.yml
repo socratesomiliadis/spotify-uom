@@ -10,10 +10,12 @@ services:
     environment:
       - NEXTAUTH_SECRET="4xSxc3ieXiMjFbfNQDkmsikSu23weLTj"
       - BACKEND_API_HOST=http://goapp:8000
-      - NEXT_PUBLIC_API_URL=http://goapp:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
       - UPLOADTHING_TOKEN='eyJhcGlLZXkiOiJza19saXZlXzRjZjhkZjdmYzA1NWNiMDIzMGQ0NWE1MmEwMTVhNzY0ODQ4ODdkMGUwYTI0NTg5OTAwMGRmNzFkY2VmNjczNmIiLCJhcHBJZCI6IjJycDgwanlvMGkiLCJyZWdpb25zIjpbInNlYTEiXX0='
     depends_on:
       - goapp
+    networks:
+      - app_network
   goapp:
     container_name: goapp
     image: goapp:1.0.0
@@ -26,6 +28,9 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - app_network
+
   db:
     container_name: db
     image: postgres:13
@@ -37,6 +42,12 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
 
 volumes:
   pgdata: {}

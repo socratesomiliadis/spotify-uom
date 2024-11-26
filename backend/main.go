@@ -357,6 +357,6 @@ func main() {
 		json.NewEncoder(w).Encode(favorites)
 	})
 
-	http.ListenAndServe(":8000", router)
+	http.ListenAndServe("0.0.0.0:8000", router)
 
 }

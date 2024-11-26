@@ -2,7 +2,10 @@ import { SongDto } from "@/lib/dtos/song";
 import { ErrorDto } from "@/lib/dtos/error";
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL =
+  typeof window === "undefined"
+    ? process.env.BACKEND_API_HOST
+    : process.env.NEXT_PUBLIC_API_URL;
 
 const throwAxiosError = (err: any) => {
   if (!!err.response) {
@@ -24,6 +27,7 @@ export async function getAllSongs(): Promise<SongDto[]> {
 
   if (!response.ok) {
     const error = (await response.json()) as ErrorDto;
+    console.log(error);
     throw new Error(error.message);
   }
 
@@ -40,6 +44,7 @@ export async function getSongById(id: number): Promise<SongDto> {
 
   if (!response.ok) {
     const error = (await response.json()) as ErrorDto;
+    console.log(error);
     throw new Error(error.message);
   }
 
