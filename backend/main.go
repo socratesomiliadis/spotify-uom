@@ -357,6 +357,6 @@ func main() {
 		json.NewEncoder(w).Encode(favorites)
 	})
 
-	http.ListenAndServe("0.0.0.0:8002", router)
+	http.ListenAndServeTLS("0.0.0.0:8002", "certificate.crt", "private.key", router)
 
 }
