@@ -10,7 +10,7 @@ services:
     environment:
       - NEXTAUTH_SECRET="4xSxc3ieXiMjFbfNQDkmsikSu23weLTj"
       - BACKEND_API_HOST=http://goapp:8002
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_URL=http://goapp:8002
       - NEXTAUTH_URL=https://spotify-uom.sohub.digital
       - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
     depends_on:
