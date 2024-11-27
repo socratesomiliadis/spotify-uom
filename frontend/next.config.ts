@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/spotify-api",
-        destination: "http://host.docker.internal:8002",
+        destination: "http://fwk4g0wsg8sgg0gosco8sggo.167.235.203.74.sslip.io",
       },
     ];
   },
