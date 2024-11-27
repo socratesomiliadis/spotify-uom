@@ -14,14 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  rewrites: async () => {
-    return [
-      {
-        source: "/spotify-api",
-        destination: "http://fwk4g0wsg8sgg0gosco8sggo.167.235.203.74.sslip.io",
-      },
-    ];
-  },
 };
 
 export default nextConfig;

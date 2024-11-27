@@ -3,7 +3,9 @@ import { ErrorDto } from "@/lib/dtos/error";
 import axios from "axios";
 
 const API_URL =
-  typeof window === "undefined" ? process.env.BACKEND_API_HOST : "/spotify-api";
+  typeof window === "undefined"
+    ? process.env.BACKEND_API_HOST
+    : "http://fwk4g0wsg8sgg0gosco8sggo.167.235.203.74.sslip.io";
 
 const throwAxiosError = (err: any) => {
   if (!!err.response) {
