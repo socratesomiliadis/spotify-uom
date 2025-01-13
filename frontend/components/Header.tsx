@@ -9,6 +9,7 @@ import Button from "./Button";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import { FaUserAlt } from "react-icons/fa";
+import Link from "next/link";
 
 interface HeaderProps {
   children: React.ReactNode;
@@ -104,7 +105,18 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
         <div className="flex justify-between items-center gap-x-4">
           {session?.user ? (
             <div className="flex gap-x-4 items-center">
-              <Button onClick={handleLogout} className="bg-white px-6 py-2">
+              {!!session?.user?.isArtist && (
+                <Link
+                  href="/upload"
+                  className="bg-white text-black font-semibold tracking-tight rounded-full px-6 py-2"
+                >
+                  Upload
+                </Link>
+              )}
+              <Button
+                onClick={handleLogout}
+                className="bg-transparent border-[1px] border-white text-white px-6 py-2"
+              >
                 Logout
               </Button>
               <Button

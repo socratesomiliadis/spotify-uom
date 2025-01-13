@@ -11,8 +11,8 @@ services:
       - NEXTAUTH_SECRET="4xSxc3ieXiMjFbfNQDkmsikSu23weLTj"
       - BACKEND_API_HOST=http://goapp:8002
       - NEXT_PUBLIC_API_URL=http://goapp:8002
-      - NEXTAUTH_URL=http://spotify-uom.sohub.digital
-      - UPLOADTHING_TOKEN=${UPLOADTHING_TOKEN}
+      - NEXTAUTH_URL=http://localhost:3000
+
     depends_on:
       - goapp
     networks:

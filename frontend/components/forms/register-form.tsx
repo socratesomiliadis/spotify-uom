@@ -17,12 +17,11 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
   const router = useRouter();
 
   const handleCredentialSignup = async (data: any) => {
-    const isArtist = data.isArtist === "true";
     const res = await signIn("credentials-signup", {
       name: data.name,
       email: data.email,
       password: data.password,
-      isArtist: true,
+      isArtist: data.isArtist,
       callbackUrl,
       redirect: false,
     });
@@ -102,10 +101,11 @@ export function RegisterForm({ callbackUrl }: { callbackUrl: string }) {
         )}
       </div>
       <div className="flex items-center space-x-2">
-        <Checkbox
+        <Input
+          type="checkbox"
           id="isArtist"
           {...register("isArtist")}
-          className="border-gray-500 rounded-full"
+          className="border-gray-500 rounded-full w-fit"
         />
         <Label htmlFor="isArtist" className="text-sm font-medium text-gray-200">
           Are you an artist?

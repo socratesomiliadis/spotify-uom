@@ -226,6 +226,7 @@ func main() {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(dtos.SuccessDto{Message: "song created"})
 	})
 
 	// Delete a song (artist only)

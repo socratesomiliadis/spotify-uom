@@ -10,6 +10,8 @@ import { useState } from "react";
 import { UploadButton } from "@/utils/uploadthing";
 import { createSong } from "@/lib/services/song";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import { X } from "lucide-react";
 
 export function UploadForm() {
   const router = useRouter();
@@ -39,7 +41,29 @@ export function UploadForm() {
     } catch (err: any) {
       toast.error(err.message);
     }
+
+    toast.success("Song uploaded successfully!");
+    router.push("/");
   };
+
+  async function handleDelete(key: string | undefined) {
+    if (key) {
+      const data = {
+        key: key,
+      };
+
+      try {
+        const response = await fetch("/api/ut-delete", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+    }
+    setImageURL(null);
+  }
 
   return (
     <form
@@ -63,27 +87,67 @@ export function UploadForm() {
       </div>
       <div className="space-y-2">
         <Label className="text-sm font-medium">Song Thumbnail</Label>
-        <UploadButton
-          endpoint="imageUploader"
-          onClientUploadComplete={(data) => {
-            setImageURL(data[0].url);
-          }}
-          onUploadError={(error: Error) => {
-            console.log(error);
-          }}
-        />
+        {!imageURL && (
+          <UploadButton
+            className="ut-button:text-black ut-button:bg-[#1ed760] ut-button:rounded-full font-medium tracking-tight"
+            endpoint="imageUploader"
+            onClientUploadComplete={(data) => {
+              setImageURL(data[0].url);
+            }}
+            onUploadError={(error: Error) => {
+              console.log(error);
+            }}
+          />
+        )}
+        {imageURL && (
+          <div className="relative w-fit">
+            <button
+              onClick={() => {
+                const key = imageURL?.split("/").pop();
+                console.log(imageURL);
+                handleDelete(key);
+              }}
+              className="absolute size-10 right-2 top-2 bg-[#1ed760] rounded-full p-2 text-black"
+            >
+              <X />
+            </button>
+            <Image
+              src={imageURL}
+              alt="Song Thumbnail"
+              className="aspect-square rounded-2xl w-44 object-cover object-center"
+              width={600}
+              height={600}
+            />
+          </div>
+        )}
       </div>
       <div className="space-y-2">
         <Label className="text-sm font-medium">Song File</Label>
-        <UploadButton
-          endpoint="songUploader"
-          onClientUploadComplete={(data) => {
-            setFileURL(data[0].url);
-          }}
-          onUploadError={(error: Error) => {
-            console.log(error);
-          }}
-        />
+        {!fileURL && (
+          <UploadButton
+            className="ut-button:text-black ut-button:bg-[#1ed760] ut-button:rounded-full font-medium tracking-tight"
+            endpoint="songUploader"
+            onClientUploadComplete={(data) => {
+              setFileURL(data[0].url);
+            }}
+            onUploadError={(error: Error) => {
+              console.log(error);
+            }}
+          />
+        )}
+        {!!fileURL && (
+          <button
+            onClick={() => {
+              const key = fileURL?.split("/").pop();
+              console.log(fileURL);
+              handleDelete(key);
+            }}
+            className="flex flex-row items-center gap-1 bg-[#1ed760] rounded-full py-2 px-6 text-black"
+          >
+            <X size={18} />
+            <span>Remove Song File</span>
+          </button>
+        )}
       </div>
       {/* <div className="flex items-center space-x-2">
         <Checkbox id="remember" className="border-gray-500" />

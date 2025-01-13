@@ -59,7 +59,7 @@ func GetSongsByTitle(title string) ([]*dtos.SongDto, *dtos.ErrorDto) {
 	var songs []*domains.Song
 	if err := db.GetInstance().
 		Preload("Artist").
-		Where("title LIKE ?", "%"+title+"%").
+		Where("title ILIKE ?", "%"+title+"%").
 		Find(&songs).Error; err != nil {
 		return nil, &dtos.ErrorDto{Message: err.Error()}
 	}
